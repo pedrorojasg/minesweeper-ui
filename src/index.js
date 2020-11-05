@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// squares is a matrix
+
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>
@@ -11,33 +13,32 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, j) {
     return (
       <Square
-        value={this.props.squares[i]}
+        value={this.props.squares[i][j]}
         onClick={() => this.props.onClick(i)}
       />
     );
   }
 
   render() {
+    const gameBoard = this.props.squares;
+    const matrix = [];
+
+    for (let i = 0; i < gameBoard.length; i++) {
+      const row = gameBoard[i];
+      const items = [];
+      
+      for (let j = 0; j < row.length; j++) {
+        items.push(this.renderSquare(i,j))
+      };
+      
+      matrix.push(<div className="board-row">{items}</div>);
+    };
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {matrix}
       </div>
     );
   }
@@ -47,12 +48,43 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoaded: false,
+      error: null,
+      createdTime: null,
+      finishedTime: null,
+      status: null,
+      fieldBoard: [],
+      gameBoard: [],
       history: [{
         squares: Array(9).fill(null),
       }],
       stepNumber: 0,
-      xIsNext: true,
     };
+  }
+  
+  componentDidMount() {
+    fetch("https://minesweeperdemo.herokuapp.com/games/d54540c9-604f-4429-9ead-a0c90eb5cf8c/")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            createdTime: result.created_time,
+            status:result.status,
+            fieldBoard: result.field_board,
+            gameBoard: result.game_board,
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
   }
 
   handleClick(i) {
@@ -106,7 +138,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
-            squares={current.squares}
+            squares={this.state.fieldBoard}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -120,22 +152,6 @@ class Game extends React.Component {
 }
 
 function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
   return null;
 }
 
