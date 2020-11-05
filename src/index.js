@@ -17,7 +17,7 @@ class Board extends React.Component {
     return (
       <Square
         value={this.props.squares[i][j]}
-        onClick={() => this.props.onClick(i)}
+        onClick={() => this.props.onClick(i,j)}
       />
     );
   }
@@ -87,24 +87,25 @@ class Game extends React.Component {
       )
   }
 
-  handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+  handleClick(i,j) {
+    const gameBoard = this.state.gameBoard;
+    const status = calculateStatus(gameBoard);
+    const squares = gameBoard.slice();
+    
+    console.log(status);
+    if (status != 'started') {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    console.log('pass');
+    squares[i][j] = 'y';
+    console.log(squares);
     this.setState({
-      history: history.concat([{
-        squares: squares
-      }]),
-      stepNumber: history.length,
-      xIsNext: !this.state.xIsNext,
+      gameBoard: squares,
     });
   }
 
   jumpTo(step) {
+    // Not used
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
@@ -112,47 +113,36 @@ class Game extends React.Component {
   }
 
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const gameBoard = this.state.gameBoard;
+    const status = calculateStatus(gameBoard);
 
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start';
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    });
-
-    let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
+    let resultMessage;
+    if (status == 'started') {
+      resultMessage = 'You are doing great!';
+    } else if (status == 'won') {
+      resultMessage = 'You won!!';
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      resultMessage = 'You lost! :(';
     }
 
     return (
       <div className="game">
         <div className="game-board">
           <Board
-            squares={this.state.fieldBoard}
-            onClick={(i) => this.handleClick(i)}
+            squares={this.state.gameBoard}
+            onClick={(i,j) => this.handleClick(i,j)}
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
-          <ol>{moves}</ol>
+          <div>{resultMessage}</div>
         </div>
       </div>
     );
   }
 }
 
-function calculateWinner(squares) {
-  return null;
+function calculateStatus(squares) {
+  return 'started';
 }
 
 
