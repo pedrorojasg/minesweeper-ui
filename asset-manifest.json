@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/minesweeper-ui/static/css/main.b226700a.chunk.css",
+    "main.js": "/minesweeper-ui/static/js/main.e3a725c4.chunk.js",
+    "main.js.map": "/minesweeper-ui/static/js/main.e3a725c4.chunk.js.map",
+    "runtime-main.js": "/minesweeper-ui/static/js/runtime-main.e730b11e.js",
+    "runtime-main.js.map": "/minesweeper-ui/static/js/runtime-main.e730b11e.js.map",
+    "static/js/2.80afa505.chunk.js": "/minesweeper-ui/static/js/2.80afa505.chunk.js",
+    "static/js/2.80afa505.chunk.js.map": "/minesweeper-ui/static/js/2.80afa505.chunk.js.map",
+    "index.html": "/minesweeper-ui/index.html",
+    "static/css/main.b226700a.chunk.css.map": "/minesweeper-ui/static/css/main.b226700a.chunk.css.map",
+    "static/js/2.80afa505.chunk.js.LICENSE.txt": "/minesweeper-ui/static/js/2.80afa505.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e730b11e.js",
+    "static/js/2.80afa505.chunk.js",
+    "static/css/main.b226700a.chunk.css",
+    "static/js/main.e3a725c4.chunk.js"
+  ]
+}
