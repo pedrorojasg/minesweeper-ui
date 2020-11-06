@@ -55,6 +55,7 @@ class Game extends React.Component {
       status: null,
       fieldBoard: [],
       gameBoard: [],
+      markerCounter: 1,
       history: [{
         squares: Array(9).fill(null),
       }],
@@ -63,7 +64,17 @@ class Game extends React.Component {
   }
   
   componentDidMount() {
-    fetch("https://minesweeperdemo.herokuapp.com/games/d54540c9-604f-4429-9ead-a0c90eb5cf8c/")
+    fetch("https://minesweeperdemo.herokuapp.com/games/", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      // body: JSON.stringify({
+      //   firstParam: 'yourValue',
+      //   secondParam: 'yourOtherValue'
+      // })
+    })
       .then(res => res.json())
       .then(
         (result) => {
@@ -89,26 +100,27 @@ class Game extends React.Component {
 
   handleClick(i,j) {
     const gameBoard = this.state.gameBoard;
+    const fieldBoard = this.state.fieldBoard.slice();
+    const markerCounter = this.state.markerCounter;
     const status = calculateStatus(gameBoard);
     const squares = gameBoard.slice();
     
-    console.log(status);
-    if (status != 'started') {
+    console.log(status); //
+    if (status != 'started' || squares[i][j] == 'x' || squares[i][j] == 'm') {
       return;
     }
-    console.log('pass');
-    squares[i][j] = 'y';
-    console.log(squares);
+    console.log('pass'); //
+    squares[i][j] = getNextVal(fieldBoard[i][j], markerCounter);
     this.setState({
       gameBoard: squares,
+      status: status,
     });
   }
 
-  jumpTo(step) {
-    // Not used
+  updateMarker() {
+    const newMarkerCounter = (this.state.markerCounter + 1) % 3;
     this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
+      markerCounter: newMarkerCounter,
     });
   }
 
@@ -128,13 +140,16 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
+          <div className="game-info">
+            <div>{resultMessage}</div>
+            <div>
+              <button onClick={() => this.updateMarker()}>Cambia</button>
+            </div>
+          </div>
           <Board
             squares={this.state.gameBoard}
             onClick={(i,j) => this.handleClick(i,j)}
           />
-        </div>
-        <div className="game-info">
-          <div>{resultMessage}</div>
         </div>
       </div>
     );
@@ -143,6 +158,16 @@ class Game extends React.Component {
 
 function calculateStatus(squares) {
   return 'started';
+}
+
+function getNextVal(fieldCell, markerCounter) {
+  if (markerCounter == 1) {
+    return fieldCell == '' ? 'x' : 'm';
+  } else if (markerCounter == 2) {
+    return 'f';
+  } else {
+    return '?';
+  }
 }
 
 

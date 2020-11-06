@@ -6,9 +6,17 @@ Developed using React.
 
 https://pedrorojasg.github.io/minesweeper-ui/
 
-# Getting Started with Create React App
+## Goals:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
++ Implement an API client library for the minesweeper REST API.
++ When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
++ Ability to 'flag' a cell with a question mark or red flag
++ Detect when game is over
++ Time tracking
++ Persistence
++ Ability to start a new game and preserve/resume the old ones
++ Ability to select the game parameters: number of rows, columns, and mines
++ Ability to support multiple users/accounts
 
 ## Available Scripts
 
