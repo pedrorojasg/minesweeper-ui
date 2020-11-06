@@ -56,6 +56,7 @@ class Game extends React.Component {
       fieldBoard: [],
       gameBoard: [],
       markerCounter: 1,
+      markerText: 'Discover',
       history: [{
         squares: Array(9).fill(null),
       }],
@@ -102,31 +103,41 @@ class Game extends React.Component {
     const gameBoard = this.state.gameBoard;
     const fieldBoard = this.state.fieldBoard.slice();
     const markerCounter = this.state.markerCounter;
-    const status = calculateStatus(gameBoard);
     const squares = gameBoard.slice();
+    let status;
+    status = calculateStatus(fieldBoard, squares);
     
-    console.log(status); //
     if (status != 'started' || squares[i][j] == 'x' || squares[i][j] == 'm') {
       return;
     }
-    console.log('pass'); //
+
     squares[i][j] = getNextVal(fieldBoard[i][j], markerCounter);
     this.setState({
       gameBoard: squares,
-      status: status,
     });
   }
 
   updateMarker() {
     const newMarkerCounter = (this.state.markerCounter + 1) % 3;
+    let text;
+    if (newMarkerCounter == 1) {
+      text = 'Discover';
+    } else if (newMarkerCounter == 2) {
+      text = 'Flag';
+    } else {
+      text = 'Question';
+    }
     this.setState({
       markerCounter: newMarkerCounter,
+      markerText: text,
     });
   }
 
   render() {
-    const gameBoard = this.state.gameBoard;
-    const status = calculateStatus(gameBoard);
+    const gameBoard = this.state.gameBoard.slice();
+    const fieldBoard = this.state.fieldBoard.slice();
+    const markerText = this.state.markerText;
+    const status = calculateStatus(fieldBoard, gameBoard);
 
     let resultMessage;
     if (status == 'started') {
@@ -143,7 +154,7 @@ class Game extends React.Component {
           <div className="game-info">
             <div>{resultMessage}</div>
             <div>
-              <button onClick={() => this.updateMarker()}>Cambia</button>
+              <button onClick={() => this.updateMarker()}>{markerText}</button>
             </div>
           </div>
           <Board
@@ -156,8 +167,28 @@ class Game extends React.Component {
   }
 }
 
-function calculateStatus(squares) {
-  return 'started';
+function calculateStatus(fieldBoard, gameBoard) {
+  let isComplete;
+  isComplete = true;
+  for (let i = 0; i < gameBoard.length; i++) {
+    const rowGame = gameBoard[i];
+    const rowField = fieldBoard[i];
+    
+    for (let j = 0; j < rowGame.length; j++) {
+      if (rowGame[j] == 'm') {
+        return 'lost';
+      }
+      if (rowField[j] == '' && rowGame[j] != 'x') {
+        isComplete = false;
+      }
+    };
+    
+  };
+  if (isComplete) {
+    return 'won';
+  } else {
+    return 'started';
+  }
 }
 
 function getNextVal(fieldCell, markerCounter) {
